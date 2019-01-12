@@ -100,8 +100,9 @@ The macro accepts the following keyword arguments:
 
 :lighter
 
-  If provided, this is a mode lighter symbol or string which will be used
-  for the \"-on-save\" minor mode.  Default is to use no lighter.
+  If provided, this is a mode lighter string which will be used
+  for the \"-on-save\" minor mode.  It should have a leading
+  space.  Default is to use no lighter.
 
 :keymap
 
@@ -118,7 +119,7 @@ The macro accepts the following keyword arguments:
              `(progn
                 (defcustom ,lighter-name ,lighter
                   ,(format "Mode lighter for `%s'." on-save-mode-name)
-                  :type '(choice symbol string))
+                  :type 'string)
                 (define-minor-mode ,on-save-mode-name
                   ,(format "When enabled, call `%s' when this buffer is saved." name)
                   nil
