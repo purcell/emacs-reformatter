@@ -21,13 +21,13 @@ dhall executable:
 ```el
 ;;;###autoload (autoload 'dhall-format "current-file" nil t)
 ;;;###autoload (autoload 'dhall-format-on-save-mode "current-file" nil t)
-(define-reformatter dhall-format
+(reformatter-define dhall-format
   :program dhall-command
   :args '("format")
   :lighter 'DF)
 ```
 
-The `define-reformatter` macro expands to code which generates both
+The `reformatter-define` macro expands to code which generates both
 the `dhall-format` interactive command and a local minor mode called
 `dhall-format-on-save-mode`.  The example above includes autoloads
 which will be useful to library authors.
@@ -43,7 +43,7 @@ above example might add the following to a project-specific
    (mode . dhall-format-on-save-mode)))
 ```
 
-See the documentation for `define-reformatter`, which provides a
+See the documentation for `reformatter-define`, which provides a
 number of options for customising the generated code.
 
 ## Rationale

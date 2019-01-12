@@ -4,6 +4,7 @@
 
 ;; Author: Steve Purcell <steve@sanityinc.com>
 ;; Keywords: convenience, tools
+;; Homepage: https://github.com/purcell/reformatter.el
 ;; Package-Requires: ((emacs "24.3"))
 ;; Package-Version: 0
 
@@ -38,11 +39,11 @@
 
 ;;     ;;;###autoload (autoload 'dhall-format "current-file" nil t)
 ;;     ;;;###autoload (autoload 'dhall-format-on-save-mode "current-file" nil t)
-;;     (define-reformatter dhall-format
+;;     (reformatter-define dhall-format
 ;;       :program dhall-command
 ;;       :args '("format"))
 
-;; The `define-reformatter' macro expands to code which generates both
+;; The `reformatter-define' macro expands to code which generates both
 ;; the `dhall-format' interactive command and a local minor mode
 ;; called `dhall-format-on-save-mode'.  The example above includes
 ;; autoloads which will be useful to library authors.
@@ -56,7 +57,7 @@
 ;;     ((dhall-mode
 ;;       (mode . dhall-format-on-save-mode)))
 
-;; See the documentation for `define-reformatter', which provides a
+;; See the documentation for `reformatter-define', which provides a
 ;; number of options for customising the generated code.
 
 ;;; Code:
@@ -65,7 +66,7 @@
 (require 'ansi-color)
 
 ;;;###autoload
-(cl-defmacro define-reformatter (name &key program args (mode t) lighter keymap)
+(cl-defmacro reformatter-define (name &key program args (mode t) lighter keymap)
   "Define a reformatter command with NAME.
 
 When called, the reformatter will use PROGRAM and any ARGS to
