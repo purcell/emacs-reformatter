@@ -33,20 +33,17 @@
 ;; be provided as development continues.
 
 ;; As an example, let's define a reformat command that applies the
-;; "dhall format" command.  We'll assume that we've already defined a
+;; "dhall format" command.  We'll assume here that we've already defined a
 ;; variable `dhall-command' which holds the string name or path of the
 ;; dhall executable:
 
-;;     ;;;###autoload (autoload 'dhall-format "current-file" nil t)
-;;     ;;;###autoload (autoload 'dhall-format-on-save-mode "current-file" nil t)
 ;;     (reformatter-define dhall-format
 ;;       :program dhall-command
 ;;       :args '("format"))
 
 ;; The `reformatter-define' macro expands to code which generates both
 ;; the `dhall-format' interactive command and a local minor mode
-;; called `dhall-format-on-save-mode'.  The example above includes
-;; autoloads which will be useful to library authors.
+;; called `dhall-format-on-save-mode'
 
 ;; The generated minor mode allows idiomatic per-directory or per-file
 ;; customisation, via the "modes" support baked into Emacs' file-local
@@ -55,10 +52,16 @@
 ;; .dir-locals.el file:
 
 ;;     ((dhall-mode
-;;       (mode . dhall-format-on-save-mode)))
+;;       (mode . dhall-format-on-save)))
 
 ;; See the documentation for `reformatter-define', which provides a
 ;; number of options for customising the generated code.
+
+;; Library authors might like to provide autoloads for the generated
+;; code, e.g.:
+
+;;     ;;;###autoload (autoload 'dhall-format "current-file" nil t)
+;;     ;;;###autoload (autoload 'dhall-format-on-save-mode "current-file" nil t)
 
 ;;; Code:
 (eval-when-compile
@@ -151,6 +154,8 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                  (if (eq retcode 0)
                      (progn
                        (insert-file-contents out-file nil nil nil t)
+                       ;; In future this might be made optional, or a user-provided
+                       ;; ":after" form could be inserted for execution
                        (whitespace-cleanup))
                    (if display-errors
                        (display-buffer error-buffer)
