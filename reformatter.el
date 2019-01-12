@@ -109,16 +109,21 @@ The macro accepts the following keyword arguments:
   (cl-assert program)
   (let ((minor-mode-form
          (when mode
-           (let ((on-save-mode-name (intern (format "%s-on-save-mode" name))))
-             `(define-minor-mode ,on-save-mode-name
-                ,(format "When enabled, call `%s' when this buffer is saved." name)
-                nil
-                :global nil
-                :lighter ,lighter
-                :keymap ,keymap
-                (if ,on-save-mode-name
-                    (add-hook 'before-save-hook ',name nil t)
-                  (remove-hook 'before-save-hook ',name t)))))))
+           (let ((on-save-mode-name (intern (format "%s-on-save-mode" name)))
+                 (lighter-name (intern (format "%s-on-save-mode-lighter" name))))
+             `(progn
+                (defcustom ,lighter-name ,lighter
+                  ,(format "Mode lighter for `%s'." on-save-mode-name)
+                  :type '(choice symbol string))
+                (define-minor-mode ,on-save-mode-name
+                  ,(format "When enabled, call `%s' when this buffer is saved." name)
+                  nil
+                  :global nil
+                  :lighter ,lighter-name
+                  :keymap ,keymap
+                  (if ,on-save-mode-name
+                      (add-hook 'before-save-hook ',name nil t)
+                    (remove-hook 'before-save-hook ',name t))))))))
     `(progn
        (defun ,name (&optional display-errors)
          "Reformats the current buffer.
