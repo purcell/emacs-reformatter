@@ -109,13 +109,13 @@ The macro accepts the following keyword arguments:
   (cl-assert program)
   (let ((minor-mode-form
          (when mode
-           (let ((on-save-mode-name (intern-soft (format "%s-on-save-mode" name))))
+           (let ((on-save-mode-name (intern (format "%s-on-save-mode" name))))
              `(define-minor-mode ,on-save-mode-name
                 ,(format "When enabled, call `%s' when this buffer is saved." name)
                 nil
                 :global nil
-                ,@(when keymap (list :keymap keymap))
-                ,@(when lighter (list :lighter lighter))
+                :lighter ,lighter
+                :keymap ,keymap
                 (if ,on-save-mode-name
                     (add-hook 'before-save-hook ',name nil t)
                   (remove-hook 'before-save-hook ',name t)))))))
