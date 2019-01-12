@@ -112,6 +112,8 @@ The macro accepts the following keyword arguments:
   (declare (indent defun))
   (cl-assert (symbolp name))
   (cl-assert program)
+  ;; Note: we skip using `gensym' here because the macro arguments are only
+  ;; referred to once below, but this may have to change later.
   (let ((minor-mode-form
          (when mode
            (let ((on-save-mode-name (intern (format "%s-on-save-mode" name)))
