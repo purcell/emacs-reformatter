@@ -42,7 +42,7 @@
 ;;       :args '("format"))
 
 ;; The `reformatter-define' macro expands to code which generates both
-;; the `dhall-format' interactive command and a local minor mode
+;; a `dhall-format' interactive command and a local minor mode
 ;; called `dhall-format-on-save-mode'.  The :args" and :program
 ;; expressions will be evaluated at runtime, so they can refer to
 ;; variables that may (later) have a buffer-local value.  A custom
