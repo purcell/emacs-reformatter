@@ -106,7 +106,9 @@ The macro accepts the following keyword arguments:
 
   If provided, this is a mode lighter string which will be used
   for the \"-on-save\" minor mode.  It should have a leading
-  space.  Default is to use no lighter.
+  space.  The supplied value will be used as the default for a
+  generated custom variable which specifies the mode lighter.
+  Default is nil, ie. no lighter.
 
 :keymap
 
