@@ -135,8 +135,16 @@ The macro accepts the following keyword arguments:
                   :group ,group
                   :type 'string)
                 (define-minor-mode ,on-save-mode-name
-                  ,(format "When enabled, call `%s' when this buffer is saved." name)
-                  nil
+                  ,(format "When enabled, call `%s' when this buffer is saved.
+
+To enable this unconditionally in a major mode, add this mode
+to the major mode's hook.  To enable it in specific files or directories,
+use the local variables \"mode\" mechanism, e.g. in \".dir-locals.el\" you
+might use
+
+     ((some-major-mode
+        (mode . %s-on-save)))
+ " name name) nil
                   :global nil
                   :lighter ,lighter-name
                   :keymap ,keymap
