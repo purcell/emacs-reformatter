@@ -41,13 +41,14 @@
 ;;       :program dhall-command
 ;;       :args '("format"))
 
-;; The `reformatter-define' macro expands to code which generates both
-;; a `dhall-format' interactive command and a local minor mode
-;; called `dhall-format-on-save-mode'.  The :args" and :program
-;; expressions will be evaluated at runtime, so they can refer to
-;; variables that may (later) have a buffer-local value.  A custom
-;; variable will be generated for the mode lighter, with the supplied
-;; value becoming the default.
+;; The `reformatter-define' macro expands to code which generates
+;; `dhall-format-buffer' and `dhall-format-region' interactive
+;; commands, and a local minor mode called
+;; `dhall-format-on-save-mode'.  The :args" and :program expressions
+;; will be evaluated at runtime, so they can refer to variables that
+;; may (later) have a buffer-local value.  A custom variable will be
+;; generated for the mode lighter, with the supplied value becoming
+;; the default.
 
 ;; The generated minor mode allows idiomatic per-directory or per-file
 ;; customisation, via the "modes" support baked into Emacs' file-local
@@ -64,7 +65,8 @@
 ;; Library authors might like to provide autoloads for the generated
 ;; code, e.g.:
 
-;;     ;;;###autoload (autoload 'dhall-format "current-file" nil t)
+;;     ;;;###autoload (autoload 'dhall-format-buffer "current-file" nil t)
+;;     ;;;###autoload (autoload 'dhall-format-region "current-file" nil t)
 ;;     ;;;###autoload (autoload 'dhall-format-on-save-mode "current-file" nil t)
 
 ;;; Code:
@@ -125,17 +127,19 @@ The macro accepts the following keyword arguments:
   (cl-assert program)
   ;; Note: we skip using `gensym' here because the macro arguments are only
   ;; referred to once below, but this may have to change later.
-  (let ((minor-mode-form
-         (when mode
-           (let ((on-save-mode-name (intern (format "%s-on-save-mode" name)))
-                 (lighter-name (intern (format "%s-on-save-mode-lighter" name))))
-             `(progn
-                (defcustom ,lighter-name ,lighter
-                  ,(format "Mode lighter for `%s'." on-save-mode-name)
-                  :group ,group
-                  :type 'string)
-                (define-minor-mode ,on-save-mode-name
-                  ,(format "When enabled, call `%s' when this buffer is saved.
+  (let* ((buffer-fn-name (intern (format "%s-buffer" name)))
+         (region-fn-name (intern (format "%s-region" name)))
+         (minor-mode-form
+          (when mode
+            (let ((on-save-mode-name (intern (format "%s-on-save-mode" name)))
+                  (lighter-name (intern (format "%s-on-save-mode-lighter" name))))
+              `(progn
+                 (defcustom ,lighter-name ,lighter
+                   ,(format "Mode lighter for `%s'." on-save-mode-name)
+                   :group ,group
+                   :type 'string)
+                 (define-minor-mode ,on-save-mode-name
+                   ,(format "When enabled, call `%s' when this buffer is saved.
 
 To enable this unconditionally in a major mode, add this mode
 to the major mode's hook.  To enable it in specific files or directories,
@@ -145,20 +149,19 @@ might use
      ((some-major-mode
         (mode . %s-on-save)))
  " name name) nil
-                  :global nil
-                  :lighter ,lighter-name
-                  :keymap ,keymap
-                  :group ,group
-                  (if ,on-save-mode-name
-                      (add-hook 'before-save-hook ',name nil t)
-                    (remove-hook 'before-save-hook ',name t))))))))
+                   :global nil
+                   :lighter ,lighter-name
+                   :keymap ,keymap
+                   :group ,group
+                   (if ,on-save-mode-name
+                       (add-hook 'before-save-hook ',buffer-fn-name nil t)
+                     (remove-hook 'before-save-hook ',buffer-fn-name t))))))))
     `(progn
-       (defun ,name (&optional display-errors)
-         "Reformats the current buffer.
+       (defun ,region-fn-name (beg end &optional display-errors)
+         "Reformats the region from BEG to END.
 When called interactively, or with prefix argument
 DISPLAY-ERRORS, shows a buffer if the formatting fails."
-         (interactive "p")
-         (message "Formatting buffer")
+         (interactive "rp")
          (let* ((err-file (make-temp-file ,(symbol-name name)))
                 (out-file (make-temp-file ,(symbol-name name)))
                 (coding-system-for-read 'utf-8)
@@ -166,7 +169,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
            (unwind-protect
                (let* ((error-buffer (get-buffer-create ,(format "*%s errors*" name)))
                       (retcode
-                       (apply 'call-process-region (point-min) (point-max) ,program
+                       (apply 'call-process-region beg end ,program
                               nil (list (list :file out-file) err-file)
                               nil
                               ,args)))
@@ -186,6 +189,18 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                      (message ,(concat (symbol-name name) " failed: see %s") (buffer-name error-buffer)))))
              (delete-file err-file)
              (delete-file out-file))))
+
+       (defun ,buffer-fn-name (&optional display-errors)
+         "Reformats the current buffer.
+When called interactively, or with prefix argument
+DISPLAY-ERRORS, shows a buffer if the formatting fails."
+         (interactive "p")
+         (message "Formatting buffer")
+         (,region-fn-name (point-min) (point-max) display-errors))
+
+       ;; This alias will be removed in a future version
+       (defalias ',name ',buffer-fn-name)
+
        ,minor-mode-form)))
 
 
