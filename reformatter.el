@@ -73,7 +73,7 @@
 (require 'ansi-color)
 
 ;;;###autoload
-(cl-defmacro reformatter-define (name &key program args (mode t) lighter keymap)
+(cl-defmacro reformatter-define (name &key program args (mode t) lighter keymap group)
   "Define a reformatter command with NAME.
 
 When called, the reformatter will use PROGRAM and any ARGS to
@@ -102,6 +102,11 @@ The macro accepts the following keyword arguments:
   reformatter command from `before-save-hook' when enabled.
   Default is t.
 
+:group
+
+  If provided, this is the custom group used for any generated
+  modes or custom variables.
+
 :lighter
 
   If provided, this is a mode lighter string which will be used
@@ -127,6 +132,7 @@ The macro accepts the following keyword arguments:
              `(progn
                 (defcustom ,lighter-name ,lighter
                   ,(format "Mode lighter for `%s'." on-save-mode-name)
+                  :group ,group
                   :type 'string)
                 (define-minor-mode ,on-save-mode-name
                   ,(format "When enabled, call `%s' when this buffer is saved." name)
@@ -134,6 +140,7 @@ The macro accepts the following keyword arguments:
                   :global nil
                   :lighter ,lighter-name
                   :keymap ,keymap
+                  :group ,group
                   (if ,on-save-mode-name
                       (add-hook 'before-save-hook ',name nil t)
                     (remove-hook 'before-save-hook ',name t))))))))
