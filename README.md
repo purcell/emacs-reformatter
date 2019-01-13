@@ -58,6 +58,7 @@ code, e.g.:
 
 * [dhall-mode.el](https://github.com/psibi/dhall-mode/blob/master/dhall-mode.el)
 * [elm-format.el](https://github.com/jcollard/elm-mode/blob/master/elm-format.el), in `elm-mode`
+* [Here](https://github.com/manuel-uberti/.emacs.d/commit/464ef5744dc22eb6cdea73e524cd615872ad24c4) is a user defining a reformatter in his own configuration
 
 ## Rationale
 
