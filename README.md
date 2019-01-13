@@ -54,6 +54,10 @@ code, e.g.:
 ;;;###autoload (autoload 'dhall-format-on-save-mode "current-file" nil t)
 ```
 
+## Examples of usage in the wild
+
+* [dhall-mode.el](https://github.com/psibi/dhall-mode/blob/master/dhall-mode.el)
+* [elm-format.el](https://github.com/jcollard/elm-mode/blob/master/elm-format.el), in `elm-mode`
 
 ## Rationale
 
