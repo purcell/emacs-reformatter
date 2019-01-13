@@ -27,7 +27,10 @@ dhall executable:
 
 The `reformatter-define` macro expands to code which generates both
 the `dhall-format` interactive command and a local minor mode called
-`dhall-format-on-save-mode`.
+`dhall-format-on-save-mode`. The `:args` and `:program` expressions
+will be evaluated at runtime, so they can refer to variables that may
+(later) have a buffer-local value. A custom variable will be generated
+for the mode lighter, with the supplied value becoming the default.
 
 The generated minor mode allows idiomatic per-directory or per-file
 customisation, via the "modes" support baked into Emacs' file-local
