@@ -4,10 +4,10 @@
 
 # Define commands which run reformatters on the current Emacs buffer
 
-This library allows elisp authors to easily provide an idiomatic
-command to reformat the current buffer using a command-line program,
-together with an optional minor mode which can apply this command
-automatically on save.
+This library lets elisp authors easily define an idiomatic command to
+reformat the current buffer using a command-line program, together
+with an optional minor mode which can apply this command automatically
+on save.
 
 In its initial release it supports only reformatters which can read
 from stdin and write to stdout, but a more versatile interface will
