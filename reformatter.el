@@ -182,7 +182,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                      (insert-file-contents err-file nil nil nil t)
                      (ansi-color-apply-on-region (point-min) (point-max)))
                    (special-mode))
-                 (if (eq retcode 0)
+                 (if (zerop retcode)
                      (save-restriction
                        ;; This replacement method minimises
                        ;; disruption to marker positions and the
