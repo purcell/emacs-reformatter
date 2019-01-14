@@ -84,6 +84,25 @@ With this library, I hope to help the community standardise on best
 practices, and make things easier for tool authors and end users
 alike.
 
+## FAQ
+
+### How is this different from [format-all.el](https://github.com/lassik/emacs-format-all-the-code)?
+
+`format-all` is a very different approach: it aims to provide a single
+minor mode which you then enable and configure to do the right thing
+(including nothing) for all the languages you use. It even tries to
+tell you how to install missing programs. It's an interesting project,
+but IMO it's hard to design the configuration for such a grand unified
+approach, and it can get complex. For example, you'd have to be able
+to configure which of two possible reformatters you want to use for a
+specific language, and to be able to do that on a per-project basis.
+
+In contrast reformatter produces small, self-contained and separate
+formatters and minor modes which all work consistently and are
+individually configured. It makes it possible to replace existing
+formatter code, and it's also very convenient for users to define
+their own ad-hoc reformatter wrappers
+
 ## Installation
 
 ### Manual
