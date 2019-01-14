@@ -180,10 +180,15 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                    (special-mode))
                  (if (eq retcode 0)
                      (progn
-                       (insert-file-contents out-file nil nil nil t)
-                       ;; In future this might be made optional, or a user-provided
-                       ;; ":after" form could be inserted for execution
-                       (whitespace-cleanup))
+                       (save-restriction
+                         ;; This replacement method minimises
+                         ;; disruption to marker positions and the
+                         ;; undo list
+                         (narrow-to-region beg end)
+                         (insert-file-contents out-file nil nil nil t)
+                         ;; In future this might be made optional, or a user-provided
+                         ;; ":after" form could be inserted for execution
+                         (whitespace-cleanup)))
                    (if display-errors
                        (display-buffer error-buffer)
                      (message ,(concat (symbol-name name) " failed: see %s") (buffer-name error-buffer)))))
