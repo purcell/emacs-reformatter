@@ -144,7 +144,7 @@ The macro accepts the following keyword arguments:
 To enable this unconditionally in a major mode, add this mode
 to the major mode's hook.  To enable it in specific files or directories,
 use the local variables \"mode\" mechanism, e.g. in \".dir-locals.el\" you
-might use
+might use:
 
      ((some-major-mode
         (mode . %s-on-save)))
