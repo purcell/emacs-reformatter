@@ -148,7 +148,7 @@ might use
 
      ((some-major-mode
         (mode . %s-on-save)))
- " name name) nil
+ " buffer-fn-name name) nil
                    :global nil
                    :lighter ,lighter-name
                    :keymap ,keymap
