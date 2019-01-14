@@ -58,6 +58,10 @@ code, e.g.:
 
 ## Examples of usage in the wild
 
+To find reverse dependencies, look for "Needed by" on the [MELPA page
+for reformatter](https://melpa.org/#/reformatter). Here are some
+specific examples:
+
 * [dhall-mode.el](https://github.com/psibi/dhall-mode/blob/master/dhall-mode.el)
 * [elm-format.el](https://github.com/jcollard/elm-mode/blob/master/elm-format.el), in `elm-mode`
 * [sqlformat.el](https://github.com/purcell/sqlformat/blob/master/sqlformat.el)
