@@ -164,6 +164,10 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
          (interactive "rp")
          (let* ((err-file (make-temp-file ,(symbol-name name)))
                 (out-file (make-temp-file ,(symbol-name name)))
+                ;; Setting this coding sysmte might not universally be
+                ;; the best default, but was apparently necessary for
+                ;; some hand-rolled reformatter functions that this
+                ;; library was written to replace.
                 (coding-system-for-read 'utf-8)
                 (coding-system-for-write 'utf-8))
            (unwind-protect
@@ -179,16 +183,15 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                      (ansi-color-apply-on-region (point-min) (point-max)))
                    (special-mode))
                  (if (eq retcode 0)
-                     (progn
-                       (save-restriction
-                         ;; This replacement method minimises
-                         ;; disruption to marker positions and the
-                         ;; undo list
-                         (narrow-to-region beg end)
-                         (insert-file-contents out-file nil nil nil t)
-                         ;; In future this might be made optional, or a user-provided
-                         ;; ":after" form could be inserted for execution
-                         (whitespace-cleanup)))
+                     (save-restriction
+                       ;; This replacement method minimises
+                       ;; disruption to marker positions and the
+                       ;; undo list
+                       (narrow-to-region beg end)
+                       (insert-file-contents out-file nil nil nil t)
+                       ;; In future this might be made optional, or a user-provided
+                       ;; ":after" form could be inserted for execution
+                       (whitespace-cleanup))
                    (if display-errors
                        (display-buffer error-buffer)
                      (message ,(concat (symbol-name name) " failed: see %s") (buffer-name error-buffer)))))
