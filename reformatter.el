@@ -107,7 +107,8 @@ The macro accepts the following keyword arguments:
 :group
 
   If provided, this is the custom group used for any generated
-  modes or custom variables.
+  modes or custom variables.  Don't forget to declare this group
+  using a `defgroup' form.
 
 :lighter
 
