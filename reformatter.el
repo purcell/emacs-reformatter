@@ -130,6 +130,7 @@ The macro accepts the following keyword arguments:
   ;; referred to once below, but this may have to change later.
   (let* ((buffer-fn-name (intern (format "%s-buffer" name)))
          (region-fn-name (intern (format "%s-region" name)))
+         (failure-var-name (intern (format "%s-failed" name)))
          (minor-mode-form
           (when mode
             (let ((on-save-mode-name (intern (format "%s-on-save-mode" name)))
@@ -151,13 +152,16 @@ might use:
         (mode . %s-on-save)))
  " buffer-fn-name name) nil
                    :global nil
-                   :lighter ,lighter-name
+                   :lighter (:eval (when ,lighter-name
+                                     (concat ,lighter-name (when ,failure-var-name "!"))))
                    :keymap ,keymap
                    :group ,group
                    (if ,on-save-mode-name
                        (add-hook 'before-save-hook ',buffer-fn-name nil t)
                      (remove-hook 'before-save-hook ',buffer-fn-name t))))))))
     `(progn
+       (defvar-local ,failure-var-name nil
+         "When non-nil, the last invocation of the reformatter in this buffer failed.")
        (defun ,region-fn-name (beg end &optional display-errors)
          "Reformats the region from BEG to END.
 When called interactively, or with prefix argument
@@ -183,6 +187,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                      (insert-file-contents err-file nil nil nil t)
                      (ansi-color-apply-on-region (point-min) (point-max)))
                    (special-mode))
+                 (setq ,failure-var-name (not (zerop retcode)))
                  (if (zerop retcode)
                      (save-restriction
                        ;; This replacement method minimises
