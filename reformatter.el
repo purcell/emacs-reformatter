@@ -74,6 +74,21 @@
   (require 'cl-lib))
 (require 'ansi-color)
 
+(defconst reformatter--working-replace-buffer-contents
+  (eval-when-compile
+    (when (fboundp 'replace-buffer-contents)
+      (with-temp-buffer
+        (insert "\u2666\nabc\n")
+        (let ((a (current-buffer)))
+          (with-temp-buffer
+            (insert "\u2666\naXbc\n")
+            (replace-buffer-contents a)
+            (string= (buffer-string) "\u2666\nabc\n"))))))
+  "When non-nil, we have a working version of `replace-buffer-contents'.
+This function was introduced in Emacs 26.1 but was initially
+broken: see
+https://groups.google.com/forum/#!topic/gnu.emacs.bug/Pg7XNhgOeGk")
+
 ;;;###autoload
 (cl-defmacro reformatter-define (name &key program args (mode t) lighter keymap group)
   "Define a reformatter command with NAME.
@@ -184,15 +199,23 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                      (ansi-color-apply-on-region (point-min) (point-max)))
                    (special-mode))
                  (if (zerop retcode)
-                     (save-restriction
-                       ;; This replacement method minimises
-                       ;; disruption to marker positions and the
-                       ;; undo list
-                       (narrow-to-region beg end)
-                       (insert-file-contents out-file nil nil nil t)
-                       ;; In future this might be made optional, or a user-provided
-                       ;; ":after" form could be inserted for execution
-                       (whitespace-cleanup))
+                     (let ((orig-buffer (current-buffer))
+                           (coding-system buffer-file-coding-system))
+                       (with-current-buffer (get-buffer-create "TEMP")
+                         (set-buffer-file-coding-system coding-system)
+                         (insert-file-contents out-file nil nil nil t)
+                         (let ((out-buf (current-buffer)))
+                           (with-current-buffer orig-buffer
+                             ;; This replacement method minimises
+                             ;; disruption to marker positions and the
+                             ;; undo list
+                             (save-restriction
+                               (narrow-to-region beg end)
+                               (message "Narrowed to %S %S" beg end)
+                               (replace-buffer-contents out-buf)
+                               ;; In future this might be made optional, or a user-provided
+                               ;; ":after" form could be inserted for execution
+                               (whitespace-cleanup))))))
                    (if display-errors
                        (display-buffer error-buffer)
                      (message ,(concat (symbol-name name) " failed: see %s") (buffer-name error-buffer)))))
