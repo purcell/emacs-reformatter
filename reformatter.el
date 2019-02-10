@@ -164,7 +164,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
          (interactive "rp")
          (let* ((err-file (make-temp-file ,(symbol-name name)))
                 (out-file (make-temp-file ,(symbol-name name)))
-                ;; Setting this coding sysmte might not universally be
+                ;; Setting this coding system might not universally be
                 ;; the best default, but was apparently necessary for
                 ;; some hand-rolled reformatter functions that this
                 ;; library was written to replace.
