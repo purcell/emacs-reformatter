@@ -127,7 +127,7 @@ See the command `reformatter`.
 
 Author: Steve Purcell <steve at sanityinc dot com>
 
-Homepage: https://github.com/purcell/reformatter
+Homepage: https://github.com/purcell/reformatter.el
 
 <hr>
 
