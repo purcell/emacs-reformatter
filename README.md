@@ -22,7 +22,7 @@ dhall executable:
 (reformatter-define dhall-format
   :program dhall-command
   :args '("format")
-  :lighter 'DF)
+  :lighter " DF")
 ```
 
 The `reformatter-define` macro expands to code which generates
