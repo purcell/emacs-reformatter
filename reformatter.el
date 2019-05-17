@@ -189,7 +189,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                        ;; disruption to marker positions and the
                        ;; undo list
                        (narrow-to-region beg end)
-                       (insert-file-contents out-file nil nil nil t)
+                       (reformatter-replace-buffer-contents-from-file out-file)
                        ;; In future this might be made optional, or a user-provided
                        ;; ":after" form could be inserted for execution
                        (whitespace-cleanup))
@@ -211,6 +211,21 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
        (defalias ',name ',buffer-fn-name)
 
        ,minor-mode-form)))
+
+(defun reformatter-replace-buffer-contents-from-file (file)
+  "Replace the accessible portion of the current buffer with the contents of FILE."
+  (if (and (fboundp 'replace-buffer-contents)
+           ;; The initial version of `replace-buffer-contents' in 26.1 was very broken
+           (version<= "26.2" emacs-version))
+      (progn
+        (let ((tmp (generate-new-buffer " *temp*")))
+          (unwind-protect
+              (progn
+                (with-current-buffer tmp
+                  (insert-file-contents file nil nil nil t))
+                (replace-buffer-contents tmp))
+            (kill-buffer tmp))))
+    (insert-file-contents file nil nil nil t)))
 
 
 (provide 'reformatter)
