@@ -221,7 +221,10 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
           (insert "\u2666\naXbc\n")
           (replace-buffer-contents a)
           (string= (buffer-string) "\u2666\nabc\n")))))
-  "Non-nil if we have a working version of `replace-buffer-contents' in this Emacs.")
+  "Non-nil if `replace-buffer-contents' is present and correct in this Emacs.
+Notably, in Emacs 26.1 and corresponding development snapshots,
+this function was present but very broken in the presence of
+unicode characters.")
 
 (defun reformatter-replace-buffer-contents-from-file (file)
   "Replace the accessible portion of the current buffer with the contents of FILE."
