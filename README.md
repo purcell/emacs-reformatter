@@ -65,7 +65,7 @@ specific examples:
 * [dhall-mode.el](https://github.com/psibi/dhall-mode/blob/master/dhall-mode.el)
 * [elm-format.el](https://github.com/jcollard/elm-mode/blob/master/elm-format.el), in `elm-mode`
 * [sqlformat.el](https://github.com/purcell/sqlformat/blob/master/sqlformat.el)
-* [Here](https://github.com/manuel-uberti/.emacs.d/commit/464ef5744dc22eb6cdea73e524cd615872ad24c4) is a user defining a reformatter in his own configuration
+* [Here](https://github.com/purcell/emacs.d/blob/14f645a9bde04498ce2b60de268c2cbafa13604a/lisp/init-purescript.el#L18-L19) is the author defining a reformatter in his own configuration
 
 ## Rationale
 
