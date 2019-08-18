@@ -121,8 +121,6 @@ If you're an Emacs 24 user or you have a recent version of
 [MELPA](http://melpa.org) repository. The version of
 `reformatter` there will always be up-to-date.
 
-See the command `reformatter`.
-
 ## About
 
 Author: Steve Purcell <steve at sanityinc dot com>
