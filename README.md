@@ -110,7 +110,7 @@ their own ad-hoc reformatter wrappers
 Ensure `reformatter.el` is in a directory on your load-path, and add
 the following to your `~/.emacs` or `~/.emacs.d/init.el`:
 
-``` lisp
+```elisp
 (require 'reformatter)
 ```
 
