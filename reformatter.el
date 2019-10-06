@@ -192,7 +192,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                        (reformatter-replace-buffer-contents-from-file out-file)
                        ;; In future this might be made optional, or a user-provided
                        ;; ":after" form could be inserted for execution
-                       (whitespace-cleanup))
+                       (delete-trailing-whitespace))
                    (if display-errors
                        (display-buffer error-buffer)
                      (message ,(concat (symbol-name name) " failed: see %s") (buffer-name error-buffer)))))
