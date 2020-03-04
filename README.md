@@ -1,5 +1,6 @@
 [![Melpa Status](http://melpa.org/packages/reformatter-badge.svg)](http://melpa.org/#/reformatter)
 [![Melpa Stable Status](http://stable.melpa.org/packages/reformatter-badge.svg)](http://stable.melpa.org/#/reformatter)
+[![Build Status](https://github.com/purcell/reformatter/workflows/CI/badge.svg)](https://github.com/purcell/reformatter/actions)
 <a href="https://www.patreon.com/sanityinc"><img alt="Support me" src="https://img.shields.io/badge/Support%20Me-%F0%9F%92%97-ff69b4.svg"></a>
 
 # Define commands which run reformatters on the current Emacs buffer

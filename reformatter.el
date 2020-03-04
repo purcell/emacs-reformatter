@@ -121,8 +121,7 @@ The macro accepts the following keyword arguments:
 :keymap
 
   If provided, this is the symbol name of the \"-on-save\" mode's
-  keymap, which you must declare yourself.  Default is no keymap.
-"
+  keymap, which you must declare yourself.  Default is no keymap."
   (declare (indent defun))
   (cl-assert (symbolp name))
   (cl-assert program)
