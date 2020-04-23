@@ -183,12 +183,15 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                      (ansi-color-apply-on-region (point-min) (point-max)))
                    (special-mode))
                  (if (zerop retcode)
-                     (save-restriction
-                       ;; This replacement method minimises
-                       ;; disruption to marker positions and the
-                       ;; undo list
-                       (narrow-to-region beg end)
-                       (reformatter-replace-buffer-contents-from-file out-file))
+                     (progn
+                       (save-restriction
+                         ;; This replacement method minimises
+                         ;; disruption to marker positions and the
+                         ;; undo list
+                         (narrow-to-region beg end)
+                         (reformatter-replace-buffer-contents-from-file out-file))
+                         ;; if there is no errors the error-buffer shouldn't be kept open
+                       (delete-windows-on error-buffer))
                    (if display-errors
                        (display-buffer error-buffer)
                      (message ,(concat (symbol-name name) " failed: see %s") (buffer-name error-buffer)))))
