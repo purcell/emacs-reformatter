@@ -75,7 +75,7 @@
 (require 'ansi-color)
 
 ;;;###autoload
-(cl-defmacro reformatter-define (name &key program args (mode t) lighter keymap group)
+(cl-defmacro reformatter-define (name &key program args (mode t) lighter keymap group (exit-code-success-p 'zerop))
   "Define a reformatter command with NAME.
 
 When called, the reformatter will use PROGRAM and any ARGS to
@@ -121,9 +121,18 @@ The macro accepts the following keyword arguments:
 :keymap
 
   If provided, this is the symbol name of the \"-on-save\" mode's
-  keymap, which you must declare yourself.  Default is no keymap."
+  keymap, which you must declare yourself.  Default is no keymap.
+
+:exit-code-success-p
+
+  If provided, this is a function object callable with `funcall'
+  which accepts an integer process exit code, and returns non-nil
+  if that exit code is considered successful.  This could be a
+  lambda, quoted symbol or sharp-quoted symbol.  If not supplied,
+  the code is considered successful if it is `zerop'."
   (declare (indent defun))
   (cl-assert (symbolp name))
+  (cl-assert (functionp exit-code-success-p))
   (cl-assert program)
   ;; Note: we skip using `gensym' here because the macro arguments are only
   ;; referred to once below, but this may have to change later.
@@ -182,7 +191,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                      (insert-file-contents err-file nil nil nil t)
                      (ansi-color-apply-on-region (point-min) (point-max)))
                    (special-mode))
-                 (if (zerop retcode)
+                 (if (funcall #',exit-code-success-p retcode)
                      (progn
                        (save-restriction
                          ;; This replacement method minimises
