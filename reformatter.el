@@ -76,7 +76,7 @@
   (require 'cl-lib))
 (require 'ansi-color)
 
-(defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p display-errors)
+(defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p output-processor display-errors)
   "Do the work of reformatter called NAME.
 Reformats the current buffer's region from BEG to END using
 PROGRAM and ARGS.  For args STDIN, STDOUT, INPUT-FILE,
@@ -84,6 +84,7 @@ EXIT-CODE-SUCCESS-P and DISPLAY-ERRORS see the documentation of
 the `reformatter-define' macro."
   (cl-assert input-file)
   (cl-assert (functionp exit-code-success-p))
+  (cl-assert (functionp output-processor))
   (when (and input-file
              (buffer-file-name)
              (string= (file-truename input-file)
@@ -119,9 +120,8 @@ the `reformatter-define' macro."
                     ;; disruption to marker positions and the
                     ;; undo list
                     (narrow-to-region beg end)
-                    (reformatter-replace-buffer-contents-from-file (if stdout
-                                                                       stdout-file
-                                                                     input-file)))
+                    (reformatter-replace-buffer-contents-from-file
+                     (funcall output-processor (if stdout stdout-file input-file))))
                   ;; If there are no errors then we hide the error buffer
                   (delete-windows-on error-buffer))
               (if display-errors
@@ -131,7 +131,7 @@ the `reformatter-define' macro."
       (delete-file stdout-file))))
 
 ;;;###autoload
-(cl-defmacro reformatter-define (name &key program args (mode t) (stdin t) (stdout t) input-file lighter keymap group (exit-code-success-p 'zerop))
+(cl-defmacro reformatter-define (name &key program args (mode t) (stdin t) (stdout t) input-file lighter keymap group (exit-code-success-p 'zerop) (output-processor 'identity))
   "Define a reformatter command with NAME.
 
 When called, the reformatter will use PROGRAM and any ARGS to
@@ -222,10 +222,17 @@ EXIT-CODE-SUCCESS-P
   which accepts an integer process exit code, and returns non-nil
   if that exit code is considered successful.  This could be a
   lambda, quoted symbol or sharp-quoted symbol.  If not supplied,
-  the code is considered successful if it is `zerop'."
+  the code is considered successful if it is `zerop'.
+
+OUTPUT-PROCESSOR
+
+  If provided, this is a function that takes the output PROGRAM,
+  do some arbitrary processing to it, and then return the final
+  output.  If not supplied, the output is returned as is."
   (declare (indent defun))
   (cl-assert (symbolp name))
   (cl-assert (functionp exit-code-success-p))
+  (cl-assert (functionp output-processor))
   (cl-assert program)
   ;; Note: we skip using `gensym' here because the macro arguments are only
   ;; referred to once below, but this may have to change later.
@@ -271,7 +278,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                  (reformatter--do-region
                   ',name beg end
                   ,program ,args ,stdin ,stdout input-file
-                  #',exit-code-success-p display-errors))
+                  #',exit-code-success-p #',output-processor display-errors))
              (when (file-exists-p input-file)
                (delete-file input-file)))))
 
