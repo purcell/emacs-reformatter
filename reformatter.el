@@ -199,7 +199,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                          ;; undo list
                          (narrow-to-region beg end)
                          (reformatter-replace-buffer-contents-from-file out-file))
-                         ;; if there is no errors the error-buffer shouldn't be kept open
+                       ;; If there are no errors then we hide the error buffer
                        (delete-windows-on error-buffer))
                    (if display-errors
                        (display-buffer error-buffer)
