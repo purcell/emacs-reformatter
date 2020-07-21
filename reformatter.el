@@ -229,7 +229,7 @@ OUTPUT-PROCESSOR
   If provided, this is a function that takes the output PROGRAM,
   do some arbitrary processing to it, and then return the final
   output.  If not supplied, the output is returned as is."
-  (declare (indent defun))
+  (declare (indent defun) (debug (name :program :args :mode :group :lighter :keymap :exit-code-success-p :output-post-processor)))
   (cl-assert (symbolp name))
   (cl-assert (functionp exit-code-success-p))
   (cl-assert (functionp output-processor))
