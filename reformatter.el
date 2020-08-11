@@ -96,7 +96,12 @@ The macro accepts the following keyword arguments:
 :args
 
   If provided, this is a form which evaluates to a list of
-  strings at runtime.  Default is the empty list.
+  strings at runtime.  Default is the empty list.  This form is
+  evaluated at runtime so that you can use buffer-local variables
+  to influence the args passed to the reformatter program: note
+  that you should not abuse this in order to inspect
+  `buffer-file-name', because your reformatter should not require
+  that a buffer be backed by a file on disk.
 
 :mode
 
