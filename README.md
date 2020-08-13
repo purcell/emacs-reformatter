@@ -10,6 +10,12 @@ reformat the current buffer using a command-line program, together
 with an optional minor mode which can apply this command automatically
 on save.
 
+By default, reformatter.el expects programs to read from stdin and
+write to stdout, and you should prefer this mode of operation where
+possible.  If this isn't possible with your particular formatting
+program, refer to the options for `reformatter-define`, and see the
+examples in the package's tests.
+
 In its initial release it supports only reformatters which can read
 from stdin and write to stdout, but a more versatile interface will
 be provided as development continues.

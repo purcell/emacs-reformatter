@@ -14,10 +14,13 @@ INIT_PACKAGES="(progn \
       (package-install pkg))) \
   )"
 
-all: compile package-lint clean-elc
+all: compile package-lint test clean-elc
 
 package-lint:
 	${EMACS} -Q --eval ${INIT_PACKAGES} -batch -f package-lint-batch-and-exit reformatter.el
+
+test:
+	${EMACS} -Q --eval ${INIT_PACKAGES} -batch -l reformatter.el -l reformatter-tests.el -f ert-run-tests-batch-and-exit
 
 compile: clean-elc
 	${EMACS} -Q --eval ${INIT_PACKAGES} -L . -batch -f batch-byte-compile *.el
