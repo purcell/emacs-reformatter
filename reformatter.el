@@ -302,7 +302,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
 (defun reformatter-temp-file-in-current-directory (&optional default-extension)
   "Make a temp file in the current directory re-using the current extension.
 If the current file is not backed by a file, then use
-DEFAULT-EXTENSION."
+DEFAULT-EXTENSION, which should not contain a leading dot."
   (let ((temporary-file-directory default-directory)
         (extension (if buffer-file-name
                        (file-name-extension buffer-file-name)
