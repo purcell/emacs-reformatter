@@ -264,7 +264,7 @@ might use:
 When called interactively, or with prefix argument
 DISPLAY-ERRORS, shows a buffer if the formatting fails."
          (interactive "rp")
-         (let ((input-file (or ,input-file (make-temp-file ,(symbol-name name)))))
+         (let ((input-file ,(if input-file input-file `(make-temp-file ,(symbol-name name)))))
            ;; Evaluate args with input-file bound
            (unwind-protect
                (progn
