@@ -76,7 +76,7 @@
   (require 'cl-lib))
 (require 'ansi-color)
 
-(defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p display-errors)
+(defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p output-filter display-errors)
   "Do the work of reformatter called NAME.
 Reformats the current buffer's region from BEG to END using
 PROGRAM and ARGS.  For args STDIN, STDOUT, INPUT-FILE,
@@ -115,13 +115,20 @@ the `reformatter-define' macro."
             (if (funcall exit-code-success-p retcode)
                 (progn
                   (save-restriction
-                    ;; This replacement method minimises
-                    ;; disruption to marker positions and the
-                    ;; undo list
-                    (narrow-to-region beg end)
-                    (reformatter-replace-buffer-contents-from-file (if stdout
-                                                                       stdout-file
-                                                                     input-file)))
+                    (let ((replacement-text-file (if stdout stdout-file input-file)))
+                      (when (functionp output-filter)
+                        (with-temp-buffer
+                          (insert-file-contents replacement-text-file)
+                          (goto-char (point-min))
+                          (funcall output-filter)
+                          (when (buffer-modified-p)
+                            (write-region (point-min) (point-max) replacement-text-file nil :quiet))))
+
+                      ;; This replacement method minimises
+                      ;; disruption to marker positions and the
+                      ;; undo list
+                      (narrow-to-region beg end)
+                      (reformatter-replace-buffer-contents-from-file replacement-text-file)))
                   ;; If there are no errors then we hide the error buffer
                   (delete-windows-on error-buffer))
               (if display-errors
@@ -131,7 +138,7 @@ the `reformatter-define' macro."
       (delete-file stdout-file))))
 
 ;;;###autoload
-(cl-defmacro reformatter-define (name &key program args (mode t) (stdin t) (stdout t) input-file lighter keymap group (exit-code-success-p 'zerop))
+(cl-defmacro reformatter-define (name &key program args (mode t) (stdin t) (stdout t) input-file lighter keymap group (exit-code-success-p 'zerop) output-filter)
   "Define a reformatter command with NAME.
 
 When called, the reformatter will use PROGRAM and any ARGS to
@@ -191,6 +198,17 @@ INPUT-FILE
   deleted automatically.  You might find the function
   `reformatter-temp-file-in-current-directory' helpful.
 
+OUTPUT-FILTER
+
+  Sometimes a reformatter program might output the reformatted
+  text inside structured output such as JSON, so that the
+  structured output would need to be parsed to extract the
+  reformatted text.  If provided, OUTPUT-FILTER is expected to be
+  a function with no arguments which will be run in the context
+  of a writeable buffer containing the full output text.  The
+  function may then proceed to change the buffer contents so that
+  they contain only the replacement text.
+
 MODE
 
   Unless nil, also generate a minor mode that will call the
@@ -226,6 +244,7 @@ EXIT-CODE-SUCCESS-P
   (declare (indent defun))
   (cl-assert (symbolp name))
   (cl-assert (functionp exit-code-success-p))
+  (cl-assert (or (null output-filter) (functionp output-filter)))
   (cl-assert program)
   ;; Note: we skip using `gensym' here because the macro arguments are only
   ;; referred to once below, but this may have to change later.
@@ -271,7 +290,9 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                  (reformatter--do-region
                   ',name beg end
                   ,program ,args ,stdin ,stdout input-file
-                  #',exit-code-success-p display-errors))
+                  #',exit-code-success-p
+                  #',output-filter
+                  display-errors))
              (when (file-exists-p input-file)
                (delete-file input-file)))))
 
