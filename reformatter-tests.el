@@ -71,7 +71,8 @@
 (reformatter-define reformatter-tests-output-filter-reverse
   :program "cat"
   :output-filter (lambda ()
-                   (reverse-region (point-min) (point-max)))
+                   (reverse-region (point-min) (point-max))
+                   t)
   :args nil)
 
 (ert-deftest reformatter-tests-output-filter ()
@@ -79,6 +80,18 @@
     (insert "one\ntwo\n")
     (reformatter-tests-output-filter-reverse)
     (should (equal "two\none\n" (buffer-string)))))
+
+(reformatter-define reformatter-tests-output-filter-no-op
+  :program "wc"
+  :output-filter (lambda ()
+                   nil)
+  :args nil)
+
+(ert-deftest reformatter-tests-output-filter-no-op ()
+  (with-temp-buffer
+    (insert "one\ntwo\n")
+    (reformatter-tests-output-filter-no-op)
+    (should (equal "one\ntwo\n" (buffer-string)))))
 
 (provide 'reformatter-tests)
 ;;; reformatter-tests.el ends here

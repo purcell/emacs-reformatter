@@ -76,14 +76,28 @@
   (require 'cl-lib))
 (require 'ansi-color)
 
+(defun reformatter--apply-output-filter (program-output-file output-filter)
+  "Run OUTPUT-FILTER in a buffer containing PROGRAM-OUTPUT-FILE.
+The result of OUTPUT-FILTER is returned, and if OUTPUT-FILTER
+succeeded, the buffer's contents will be saved back to
+PROGRAM-OUTPUT-FILE."
+  (with-temp-buffer
+    (insert-file-contents program-output-file)
+    (goto-char (point-min))
+    (let ((success (funcall output-filter)))
+      (when success
+        (write-region (point-min) (point-max) program-output-file nil :quiet))
+      success)))
+
 (defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p output-filter display-errors)
   "Do the work of reformatter called NAME.
 Reformats the current buffer's region from BEG to END using
 PROGRAM and ARGS.  For args STDIN, STDOUT, INPUT-FILE,
-EXIT-CODE-SUCCESS-P and DISPLAY-ERRORS see the documentation of
-the `reformatter-define' macro."
+EXIT-CODE-SUCCESS-P, OUTPUT-FILTER and DISPLAY-ERRORS see the
+documentation of the `reformatter-define' macro."
   (cl-assert input-file)
   (cl-assert (functionp exit-code-success-p))
+  (cl-assert (or (null output-filter) (functionp output-filter)))
   (when (and input-file
              (buffer-file-name)
              (string= (file-truename input-file)
@@ -116,19 +130,13 @@ the `reformatter-define' macro."
                 (progn
                   (save-restriction
                     (let ((replacement-text-file (if stdout stdout-file input-file)))
-                      (when (functionp output-filter)
-                        (with-temp-buffer
-                          (insert-file-contents replacement-text-file)
-                          (goto-char (point-min))
-                          (funcall output-filter)
-                          (when (buffer-modified-p)
-                            (write-region (point-min) (point-max) replacement-text-file nil :quiet))))
-
-                      ;; This replacement method minimises
-                      ;; disruption to marker positions and the
-                      ;; undo list
-                      (narrow-to-region beg end)
-                      (reformatter-replace-buffer-contents-from-file replacement-text-file)))
+                      (when (or (null output-filter)
+                                (reformatter--apply-output-filter replacement-text-file output-filter))
+                        ;; This replacement method minimises
+                        ;; disruption to marker positions and the
+                        ;; undo list
+                        (narrow-to-region beg end)
+                        (reformatter-replace-buffer-contents-from-file replacement-text-file))))
                   ;; If there are no errors then we hide the error buffer
                   (delete-windows-on error-buffer))
               (if display-errors
@@ -207,7 +215,10 @@ OUTPUT-FILTER
   a function with no arguments which will be run in the context
   of a writeable buffer containing the full output text.  The
   function may then proceed to change the buffer contents so that
-  they contain only the replacement text.
+  they contain only the replacement text.  If the function
+  returns non-nil, it will be assumed that the output was
+  processed successfully.  If the function returns nil, no
+  replacement of the original text will be performed.
 
 MODE
 
