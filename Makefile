@@ -23,7 +23,7 @@ test:
 	${EMACS} -Q --eval ${INIT_PACKAGES} -batch -l reformatter.el -l reformatter-tests.el -f ert-run-tests-batch-and-exit
 
 compile: clean-elc
-	${EMACS} -Q --eval ${INIT_PACKAGES} --eval "(setq byte-compile-error-on-warn t)" -L . -batch -f batch-byte-compile *.el
+	${EMACS} -Q --eval ${INIT_PACKAGES} --eval "(setq byte-compile-error-on-warn t)" -L . -batch -f batch-byte-compile reformatter.el
 
 clean-elc:
 	rm -f f.elc
