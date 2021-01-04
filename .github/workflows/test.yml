@@ -32,6 +32,6 @@ jobs:
         version: ${{ matrix.emacs_version }}
     - uses: actions/checkout@v2
     - name: Install deps for tests
-      run: nix-env -iA nixpkgs.shfmt
+      run: nix-env -i shfmt -f '<nixpkgs>'
     - name: Run tests
       run: make
