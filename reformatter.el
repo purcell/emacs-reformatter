@@ -207,9 +207,7 @@ LIGHTER
 
   If provided, this is a mode lighter string which will be used
   for the \"-on-save\" minor mode.  It should have a leading
-  space.  The supplied value will be used as the default for a
-  generated custom variable which specifies the mode lighter.
-  Default is nil, ie. no lighter.
+  space.  Default is nil, ie. no lighter.
 
 KEYMAP
 
@@ -233,15 +231,9 @@ EXIT-CODE-SUCCESS-P
          (region-fn-name (intern (format "%s-region" name)))
          (minor-mode-form
           (when mode
-            (let ((on-save-mode-name (intern (format "%s-on-save-mode" name)))
-                  (lighter-name (intern (format "%s-on-save-mode-lighter" name))))
-              `(progn
-                 (defcustom ,lighter-name ,lighter
-                   ,(format "Mode lighter for `%s'." on-save-mode-name)
-                   :group ,group
-                   :type 'string)
-                 (define-minor-mode ,on-save-mode-name
-                   ,(format "When enabled, call `%s' when this buffer is saved.
+            (let ((on-save-mode-name (intern (format "%s-on-save-mode" name))))
+              `(define-minor-mode ,on-save-mode-name
+                ,(format "When enabled, call `%s' when this buffer is saved.
 
 To enable this unconditionally in a major mode, add this mode
 to the major mode's hook.  To enable it in specific files or directories,
@@ -251,13 +243,13 @@ might use:
      ((some-major-mode
         (mode . %s-on-save)))
  " buffer-fn-name name) nil
-                   :global nil
-                   :lighter ,lighter-name
-                   :keymap ,keymap
-                   :group ,group
-                   (if ,on-save-mode-name
-                       (add-hook 'before-save-hook ',buffer-fn-name nil t)
-                     (remove-hook 'before-save-hook ',buffer-fn-name t))))))))
+                :global nil
+                :lighter ,lighter
+                :keymap ,keymap
+                :group ,group
+                (if ,on-save-mode-name
+                    (add-hook 'before-save-hook ',buffer-fn-name nil t)
+                  (remove-hook 'before-save-hook ',buffer-fn-name t)))))))
     `(progn
        (defun ,region-fn-name (beg end &optional display-errors)
          "Reformats the region from BEG to END.
