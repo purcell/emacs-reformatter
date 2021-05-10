@@ -250,7 +250,7 @@ might use:
 
      ((some-major-mode
         (mode . %s-on-save)))
- " buffer-fn-name name) nil
+ " buffer-fn-name name)
                    :global nil
                    :lighter ,lighter-name
                    :keymap ,keymap
