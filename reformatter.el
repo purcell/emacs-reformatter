@@ -102,17 +102,21 @@ the `reformatter-define' macro."
           (write-region beg end input-file nil :quiet)
           (let* ((error-buffer (get-buffer-create (format "*%s errors*" name)))
                  (retcode
-                  (apply 'call-process program
-                         (when stdin input-file)
-                         (list (list :file stdout-file) stderr-file)
-                         nil
-                         args)))
+                  (condition-case e
+                      (apply 'call-process program
+                                  (when stdin input-file)
+                                  (list (list :file stdout-file) stderr-file)
+                                  nil
+                                  args)
+                    (error e))))
             (with-current-buffer error-buffer
               (let ((inhibit-read-only t))
                 (insert-file-contents stderr-file nil nil nil t)
+                (unless (integerp retcode)
+                  (insert (error-message-string retcode)))
                 (ansi-color-apply-on-region (point-min) (point-max)))
               (special-mode))
-            (if (funcall exit-code-success-p retcode)
+            (if (and (integerp retcode) (funcall exit-code-success-p retcode))
                 (progn
                   (save-restriction
                     ;; This replacement method minimises
