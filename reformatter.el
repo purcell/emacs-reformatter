@@ -287,9 +287,6 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
          (message "Formatting buffer")
          (,region-fn-name (point-min) (point-max) display-errors))
 
-       ;; This alias will be removed in a future version
-       (defalias ',name ',buffer-fn-name)
-
        ,minor-mode-form)))
 
 
