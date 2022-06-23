@@ -52,7 +52,7 @@
 (ert-deftest reformatter-tests-tempfile-in-stdout ()
   (with-temp-buffer
     (insert "[  foo  ] && echo yes\n")
-    (reformatter-tests-shfmt-tempfile-in-stdout)
+    (reformatter-tests-shfmt-tempfile-in-stdout-buffer)
     (should (equal "[ foo ] && echo yes\n" (buffer-string)))))
 
 ;; Modify a file in place
@@ -65,7 +65,7 @@
 (ert-deftest reformatter-tests-tempfile-in-place ()
   (with-temp-buffer
     (insert "[  foo  ] && echo yes\n")
-    (reformatter-tests-shfmt-in-place)
+    (reformatter-tests-shfmt-in-place-buffer)
     (should (equal "[ foo ] && echo yes\n" (buffer-string)))))
 
 
