@@ -111,10 +111,10 @@ the `reformatter-define' macro."
                  (retcode
                   (condition-case e
                       (apply 'call-process program
-                                  (when stdin input-file)
-                                  (list (list :file stdout-file) stderr-file)
-                                  nil
-                                  args)
+                             (when stdin input-file)
+                             (list (list :file stdout-file) stderr-file)
+                             nil
+                             args)
                     (error e))))
             (with-current-buffer error-buffer
               (let ((inhibit-read-only t))
@@ -277,7 +277,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
          (interactive "rp")
          (let ((input-file ,(if input-file
                                 input-file
-                              (reformatter--make-temp-file name))))
+                              `(reformatter--make-temp-file ',name))))
            ;; Evaluate args with input-file bound
            (unwind-protect
                (progn
