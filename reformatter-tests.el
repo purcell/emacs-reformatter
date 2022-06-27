@@ -55,6 +55,19 @@
     (reformatter-tests-shfmt-tempfile-in-stdout-buffer)
     (should (equal "[ foo ] && echo yes\n" (buffer-string)))))
 
+;; Same as `reformatter-tests-shfmt-tempfile-in-stdout', but with a
+;; slash in the symbol name.
+(reformatter-define reformatter-tests-tempfile/with-slash-in-symbol-name
+  :program "shfmt"
+  :stdin nil
+  :args (list input-file))
+
+(ert-deftest reformatter-tests-tempfile-with-slash-in-symbol-name ()
+  (with-temp-buffer
+    (insert "[  foo  ] && echo yes\n")
+    (reformatter-tests-tempfile/with-slash-in-symbol-name-buffer)
+    (should (equal "[ foo ] && echo yes\n" (buffer-string)))))
+
 ;; Modify a file in place
 (reformatter-define reformatter-tests-shfmt-in-place
   :program "shfmt"
@@ -67,7 +80,6 @@
     (insert "[  foo  ] && echo yes\n")
     (reformatter-tests-shfmt-in-place-buffer)
     (should (equal "[ foo ] && echo yes\n" (buffer-string)))))
-
 
 
 (provide 'reformatter-tests)
