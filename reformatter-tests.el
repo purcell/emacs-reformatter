@@ -65,7 +65,7 @@
 (ert-deftest reformatter-tests-tempfile-with-slash-in-symbol-name ()
   (with-temp-buffer
     (insert "[  foo  ] && echo yes\n")
-    (reformatter-tests-tempfile/with-slash-in-symbol-name)
+    (reformatter-tests-tempfile/with-slash-in-symbol-name-buffer)
     (should (equal "[ foo ] && echo yes\n" (buffer-string)))))
 
 ;; Modify a file in place
