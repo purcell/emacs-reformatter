@@ -30,7 +30,7 @@ jobs:
     - uses: purcell/setup-emacs@master
       with:
         version: ${{ matrix.emacs_version }}
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Install deps for tests
       run: nix-env -i shfmt -f '<nixpkgs>'
     - name: Run tests
