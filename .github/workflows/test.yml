@@ -7,6 +7,16 @@ on:
     - '**.md'
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: purcell/setup-emacs@master
+      with:
+        version: 29.1
+    - uses: actions/checkout@v2
+    - name: Run tests
+      run: make package-lint
+
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -22,6 +32,7 @@ jobs:
           - 27.2
           - 28.1
           - 28.2
+          - 29.1
           - snapshot
     steps:
     - uses: cachix/install-nix-action@v23
@@ -34,4 +45,4 @@ jobs:
     - name: Install deps for tests
       run: nix-env -i shfmt -f '<nixpkgs>'
     - name: Run tests
-      run: make
+      run: make compile test
