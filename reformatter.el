@@ -199,8 +199,9 @@ INPUT-FILE
   It must not produce the same path as the current buffer's file
   if that is set: you shouldn't be operating directly on the
   buffer's backing file.  The temporary input file will be
-  deleted automatically.  You might find the function
-  `reformatter-temp-file-in-current-directory' helpful.
+  deleted automatically.  You might find the functions
+  `reformatter-temp-file-in-current-directory' and
+  `reformatter-temp-file' helpful.
 
 MODE
 
@@ -308,18 +309,26 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
   ;; degree.
   (insert-file-contents file nil nil nil t))
 
-
-(defun reformatter-temp-file-in-current-directory (&optional default-extension)
-  "Make a temp file in the current directory re-using the current extension.
+(defun reformatter-temp-file (&optional default-extension)
+  "Make a temp file re-using the current extension.
 If the current file is not backed by a file, then use
-DEFAULT-EXTENSION, which should not contain a leading dot."
-  (let ((temporary-file-directory default-directory)
-        (extension (if buffer-file-name
+DEFAULT-EXTENSION, which should not contain a leading dot.
+
+The working directory for the command will always be the
+`default-directory' of the calling buffer."
+  (let ((extension (if buffer-file-name
                        (file-name-extension buffer-file-name)
                      default-extension)))
     (make-temp-file "reformatter" nil
                     (when extension
                       (concat "." extension)))))
+
+(defun reformatter-temp-file-in-current-directory (&optional default-extension)
+  "Make a temp file in the current directory re-using the current extension.
+If the current file is not backed by a file, then use
+DEFAULT-EXTENSION, which should not contain a leading dot."
+  (let ((temporary-file-directory default-directory))
+    (reformatter-temp-file default-extension)))
 
 (provide 'reformatter)
 ;;; reformatter.el ends here
