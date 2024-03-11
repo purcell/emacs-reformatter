@@ -43,6 +43,6 @@ jobs:
         version: ${{ matrix.emacs_version }}
     - uses: actions/checkout@v4
     - name: Install deps for tests
-      run: nix-env -i shfmt -f '<nixpkgs>'
+      run: nix profile install 'nixpkgs#shfmt'
     - name: Run tests
       run: make compile test
