@@ -85,10 +85,10 @@ otherwise as it cannot create intermediate directories."
 
 (defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p display-errors)
   "Do the work of reformatter called NAME.
-Reformats the current buffer's region from BEG to END using
-PROGRAM and ARGS.  For args STDIN, STDOUT, INPUT-FILE,
-EXIT-CODE-SUCCESS-P and DISPLAY-ERRORS see the documentation of
-the `reformatter-define' macro."
+Reformats the current buffer's region from BEG to END using PROGRAM and
+ARGS. When DISPLAY-ERRORS is non-nil, shows a buffer if the formatting
+fails. For args STDIN, STDOUT, INPUT-FILE and EXIT-CODE-SUCCESS-P see
+the documentation of the `reformatter-define' macro."
   (cl-assert input-file)
   (cl-assert (functionp exit-code-success-p))
   (when (and input-file
