@@ -83,12 +83,12 @@ otherwise as it cannot create intermediate directories."
   (make-temp-file
    (replace-regexp-in-string "/" "_" (symbol-name sym))))
 
-(defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p display-errors)
+(defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p display-errors working-directory)
   "Do the work of reformatter called NAME.
-Reformats the current buffer's region from BEG to END using
-PROGRAM and ARGS.  For args STDIN, STDOUT, INPUT-FILE,
-EXIT-CODE-SUCCESS-P and DISPLAY-ERRORS see the documentation of
-the `reformatter-define' macro."
+Reformats the current buffer's region from BEG to END using PROGRAM and
+ARGS. When DISPLAY-ERRORS is non-nil, shows a buffer if the formatting
+fails. For args STDIN, STDOUT, INPUT-FILE, EXIT-CODE-SUCCESS-P and
+WORKING-DIRECTORY see the documentation of the `reformatter-define' macro."
   (cl-assert input-file)
   (cl-assert (functionp exit-code-success-p))
   (when (and input-file
@@ -103,7 +103,8 @@ the `reformatter-define' macro."
          ;; some hand-rolled reformatter functions that this
          ;; library was written to replace.
          (coding-system-for-read 'utf-8)
-         (coding-system-for-write 'utf-8))
+         (coding-system-for-write 'utf-8)
+         (default-directory (or working-directory default-directory)))
     (unwind-protect
         (progn
           (write-region beg end input-file nil :quiet)
@@ -142,7 +143,7 @@ the `reformatter-define' macro."
       (delete-file stdout-file))))
 
 ;;;###autoload
-(cl-defmacro reformatter-define (name &key program args (mode t) (stdin t) (stdout t) input-file lighter keymap group (exit-code-success-p 'zerop))
+(cl-defmacro reformatter-define (name &key program args (mode t) (stdin t) (stdout t) input-file lighter keymap group (exit-code-success-p 'zerop) working-directory)
   "Define a reformatter command with NAME.
 
 When called, the reformatter will use PROGRAM and any ARGS to
@@ -234,7 +235,13 @@ EXIT-CODE-SUCCESS-P
   which accepts an integer process exit code, and returns non-nil
   if that exit code is considered successful.  This could be a
   lambda, quoted symbol or sharp-quoted symbol.  If not supplied,
-  the code is considered successful if it is `zerop'."
+  the code is considered successful if it is `zerop'.
+
+WORKING-DIRECTORY
+
+  Directory where your reformatter program is started. If provided, this
+  should be a form that evaluates to a string at runtime. Default is the
+  value of `default-directory' in the buffer."
   (declare (indent defun))
   (cl-assert (symbolp name))
   (cl-assert (functionp exit-code-success-p))
@@ -285,7 +292,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
                  (reformatter--do-region
                   ',name beg end
                   ,program ,args ,stdin ,stdout input-file
-                  #',exit-code-success-p display-errors))
+                  #',exit-code-success-p display-errors ,working-directory))
              (when (file-exists-p input-file)
                (delete-file input-file)))))
 
