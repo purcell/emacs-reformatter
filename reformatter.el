@@ -83,7 +83,7 @@ otherwise as it cannot create intermediate directories."
   (make-temp-file
    (replace-regexp-in-string "/" "_" (symbol-name sym))))
 
-(defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p display-errors working-directory)
+(defun reformatter--do-region (name beg end program args stdin stdout input-file exit-code-success-p display-errors &optional working-directory)
   "Do the work of reformatter called NAME.
 Reformats the current buffer's region from BEG to END using PROGRAM and
 ARGS. When DISPLAY-ERRORS is non-nil, shows a buffer if the formatting
