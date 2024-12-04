@@ -143,7 +143,7 @@ WORKING-DIRECTORY see the documentation of the `reformatter-define' macro."
       (delete-file stdout-file))))
 
 ;;;###autoload
-(cl-defmacro reformatter-define (name &key program args (mode t) (stdin t) (stdout t) input-file lighter keymap group (exit-code-success-p 'zerop) working-directory)
+(cl-defmacro reformatter-define (name &key program args (mode t) (stdin t) (stdout t) input-file lighter keymap group (exit-code-success-p 'zerop) working-directory interactive-modes)
   "Define a reformatter command with NAME.
 
 When called, the reformatter will use PROGRAM and any ARGS to
@@ -241,7 +241,16 @@ WORKING-DIRECTORY
 
   Directory where your reformatter program is started. If provided, this
   should be a form that evaluates to a string at runtime. Default is the
-  value of `default-directory' in the buffer."
+  value of `default-directory' in the buffer.
+
+INTERACTIVE-MODES
+
+  If provided, this is a list of mode names (as unquoted
+  symbols).  The created commands for formatting regions and
+  buffers are then tagged for interactive use in these modes,
+  making them compatible with some built-in predicate functions
+  for `read-extended-command-predicate', like
+  `command-completion-default-include-p'."
   (declare (indent defun))
   (cl-assert (symbolp name))
   (cl-assert (functionp exit-code-success-p))
@@ -282,7 +291,7 @@ might use:
          "Reformats the region from BEG to END.
 When called interactively, or with prefix argument
 DISPLAY-ERRORS, shows a buffer if the formatting fails."
-         (interactive "rp")
+         (interactive "rp" ,@interactive-modes)
          (let ((input-file ,(if input-file
                                 input-file
                               `(reformatter--make-temp-file ',name))))
@@ -300,7 +309,7 @@ DISPLAY-ERRORS, shows a buffer if the formatting fails."
          "Reformats the current buffer.
 When called interactively, or with prefix argument
 DISPLAY-ERRORS, shows a buffer if the formatting fails."
-         (interactive "p")
+         (interactive "p" ,@interactive-modes)
          (message "Formatting buffer")
          (,region-fn-name (point-min) (point-max) display-errors))
 
