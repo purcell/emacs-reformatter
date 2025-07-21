@@ -109,9 +109,11 @@ WORKING-DIRECTORY see the documentation of the `reformatter-define' macro."
         (progn
           (write-region beg end input-file nil :quiet)
           (let* ((error-buffer (get-buffer-create (format "*%s errors*" name)))
+                 (command (if (listp program) (car program) program))
+		             (args (if (listp program) (append (cdr program) args) args))
                  (retcode
                   (condition-case e
-                      (apply 'call-process program
+                      (apply 'call-process command
                              (when stdin input-file)
                              (list (list :file stdout-file) stderr-file)
                              nil
@@ -157,9 +159,9 @@ The macro accepts the following keyword arguments:
 
 PROGRAM (required)
 
-  Provides a form which should evaluate to a string at runtime,
-  e.g. a literal string, or the name of a variable which holds
-  the program path.
+  Provides a form which should evaluate to a string or list of
+  strings at runtime, e.g. a literal string, orthe name of a
+  variable which holds the program path.
 
 ARGS
 
