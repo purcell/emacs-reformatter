@@ -160,7 +160,7 @@ The macro accepts the following keyword arguments:
 PROGRAM (required)
 
   Provides a form which should evaluate to a string or list of
-  strings at runtime, e.g. a literal string, orthe name of a
+  strings at runtime, e.g. a literal string, or the name of a
   variable which holds the program path.
 
 ARGS
